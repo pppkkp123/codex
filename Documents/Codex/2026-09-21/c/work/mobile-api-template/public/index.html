@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Mobile API Chat</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="card">
+        <div class="eyebrow">OpenAI API mobile bridge</div>
+        <h1>手機共用同一組 API key</h1>
+        <p class="lede">這個頁面會透過你的後端呼叫 OpenAI，手機只碰到你的站，不會直接暴露 API key。</p>
+
+        <label class="field">
+          <span>Model</span>
+          <input id="model" value="gpt-4.1-mini" />
+        </label>
+
+        <label class="field">
+          <span>Message</span>
+          <textarea id="message" rows="5" placeholder="輸入你想問的內容"></textarea>
+        </label>
+
+        <button id="send">Send</button>
+
+        <div class="result">
+          <div class="result-label">Reply</div>
+          <pre id="output">尚未送出</pre>
+        </div>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
