@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Mobile API Chat</title>
+    <title>CGU AI Gateway Chat</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <main class="shell">
       <section class="card">
-        <div class="eyebrow">OpenAI API mobile bridge</div>
-        <h1>手機共用同一組 API key</h1>
-        <p class="lede">這個頁面會透過你的後端呼叫 OpenAI，手機只碰到你的站，不會直接暴露 API key。</p>
+        <div class="eyebrow">CGU AI Gateway mobile bridge</div>
+        <h1>手機共用同一組 Gateway key</h1>
+        <p class="lede">這個頁面會透過你的後端呼叫 CGU Gateway，手機只碰到你的站，不會直接暴露 key。</p>
 
         <label class="field">
           <span>Model</span>
@@ -24,6 +24,8 @@
         </label>
 
         <button id="send">Send</button>
+
+        <p class="hint">如果模型名稱不確定，可以先開 <code>/api/models</code> 看學校 Gateway 支援哪些模型。</p>
 
         <div class="result">
           <div class="result-label">Reply</div>
