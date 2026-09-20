@@ -20,3 +20,7 @@ npx vercel dev
 
 - API key 只放在 Vercel 環境變數，不要寫進前端。
 - `index.html`、`styles.css`、`app.js` 是前端，`api/chat.js` 是後端。
+
+## Temporary debug
+
+Open `/api/debug-key` to confirm which key Vercel is actually reading. It only shows masked info and should be removed after troubleshooting.

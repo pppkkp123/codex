@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = (process.env.OPENAI_API_KEY || "").trim();
   const defaultModel = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
   if (!apiKey) {
@@ -53,6 +53,8 @@ export default async function handler(req, res) {
     res.statusCode = response.status;
     res.end(JSON.stringify({
       error: data?.error?.message || "OpenAI request failed",
+      code: data?.error?.code || null,
+      type: data?.error?.type || null,
       raw: data
     }));
     return;

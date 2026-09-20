@@ -24,7 +24,13 @@ sendEl.addEventListener("click", async () => {
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Request failed");
+    if (!res.ok) {
+      throw new Error(
+        data.raw?.error?.message ||
+        data.error ||
+        "Request failed"
+      );
+    }
     outputEl.textContent = data.text || "(empty response)";
   } catch (err) {
     outputEl.textContent = `Error: ${err.message}`;
