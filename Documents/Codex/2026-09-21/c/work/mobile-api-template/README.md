@@ -24,3 +24,5 @@ npx vercel dev
 ## Temporary debug
 
 Open `/api/debug-key` to confirm which key Vercel is actually reading. It only shows masked info and should be removed after troubleshooting.
+
+Open `/api/whoami` to verify whether OpenAI accepts that key and which orgs it belongs to.
