@@ -1,29 +1,24 @@
-const chatModelEl = document.getElementById("chat-model");
-const messageEl = document.getElementById("message");
-const chatOutputEl = document.getElementById("chat-output");
-const sendChatEl = document.getElementById("send-chat");
-
-const visionModelEl = document.getElementById("vision-model");
-const visionMessageEl = document.getElementById("vision-message");
-const visionFileEl = document.getElementById("vision-file");
-const visionPreviewEl = document.getElementById("vision-preview");
-const visionOutputEl = document.getElementById("vision-output");
-const sendVisionEl = document.getElementById("send-vision");
-
-const imageModelEl = document.getElementById("image-model");
-const imagePromptEl = document.getElementById("image-prompt");
-const imageSizeEl = document.getElementById("image-size");
+const modeEl = document.getElementById("mode");
+const promptEl = document.getElementById("prompt");
+const imageFieldEl = document.getElementById("image-field");
+const imageFileEl = document.getElementById("image-file");
 const imagePreviewEl = document.getElementById("image-preview");
-const imageOutputEl = document.getElementById("image-output");
+const textModelEl = document.getElementById("text-model");
+const imageModelEl = document.getElementById("image-model");
+const imageSizeEl = document.getElementById("image-size");
+const outputEl = document.getElementById("output");
+const generatedPreviewEl = document.getElementById("generated-preview");
+const sendChatEl = document.getElementById("send-chat");
+const sendVisionEl = document.getElementById("send-vision");
 const sendImageEl = document.getElementById("send-image");
+
+function initButton(button) {
+  button.dataset.label = button.textContent;
+}
 
 function setBusy(button, busy) {
   button.disabled = busy;
   button.textContent = busy ? "Working..." : button.dataset.label;
-}
-
-function initButton(button) {
-  button.dataset.label = button.textContent;
 }
 
 function readFileAsDataUrl(file) {
@@ -43,90 +38,98 @@ async function postJson(path, body) {
   });
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(
-      data.raw?.error?.message ||
-      data.error ||
-      "Request failed"
-    );
+    throw new Error(data.raw?.error?.message || data.error || "Request failed");
   }
   return data;
+}
+
+function updateModeUI() {
+  const mode = modeEl.value;
+  imageFieldEl.classList.toggle("hidden", mode !== "vision");
+  sendChatEl.classList.toggle("primary", mode === "chat");
+  sendVisionEl.classList.toggle("primary", mode === "vision");
+  sendImageEl.classList.toggle("primary", mode === "image");
 }
 
 initButton(sendChatEl);
 initButton(sendVisionEl);
 initButton(sendImageEl);
+updateModeUI();
+
+modeEl.addEventListener("change", updateModeUI);
+
+imageFileEl.addEventListener("change", async () => {
+  const file = imageFileEl.files?.[0];
+  if (!file) {
+    imagePreviewEl.classList.add("hidden");
+    return;
+  }
+
+  const dataUrl = await readFileAsDataUrl(file);
+  imagePreviewEl.src = dataUrl;
+  imagePreviewEl.classList.remove("hidden");
+});
 
 sendChatEl.addEventListener("click", async () => {
-  const message = messageEl.value.trim();
+  const message = promptEl.value.trim();
   if (!message) {
-    chatOutputEl.textContent = "請先輸入內容";
+    outputEl.textContent = "請先輸入內容";
     return;
   }
 
   setBusy(sendChatEl, true);
-  chatOutputEl.textContent = "thinking...";
+  outputEl.textContent = "thinking...";
+  generatedPreviewEl.classList.add("hidden");
 
   try {
     const data = await postJson("/api/chat", {
-      model: chatModelEl.value.trim(),
+      model: textModelEl.value.trim(),
       message
     });
-    chatOutputEl.textContent = data.text || "(empty response)";
+    outputEl.textContent = data.text || "(empty response)";
   } catch (err) {
-    chatOutputEl.textContent = `Error: ${err.message}`;
+    outputEl.textContent = `Error: ${err.message}`;
   } finally {
     setBusy(sendChatEl, false);
   }
 });
 
-visionFileEl.addEventListener("change", async () => {
-  const file = visionFileEl.files?.[0];
-  if (!file) {
-    visionPreviewEl.classList.add("hidden");
-    return;
-  }
-  const dataUrl = await readFileAsDataUrl(file);
-  visionPreviewEl.src = dataUrl;
-  visionPreviewEl.classList.remove("hidden");
-});
-
 sendVisionEl.addEventListener("click", async () => {
-  const message = visionMessageEl.value.trim();
-  const file = visionFileEl.files?.[0];
+  const file = imageFileEl.files?.[0];
   if (!file) {
-    visionOutputEl.textContent = "請先選擇圖片";
+    outputEl.textContent = "請先選擇圖片";
     return;
   }
 
   setBusy(sendVisionEl, true);
-  visionOutputEl.textContent = "analyzing...";
+  outputEl.textContent = "analyzing...";
+  generatedPreviewEl.classList.add("hidden");
 
   try {
     const imageDataUrl = await readFileAsDataUrl(file);
     const data = await postJson("/api/analyze-image", {
-      model: visionModelEl.value.trim(),
-      message,
+      model: textModelEl.value.trim(),
+      message: promptEl.value.trim(),
       imageDataUrl
     });
-    visionOutputEl.textContent = data.text || "(empty response)";
+    outputEl.textContent = data.text || "(empty response)";
   } catch (err) {
-    visionOutputEl.textContent = `Error: ${err.message}`;
+    outputEl.textContent = `Error: ${err.message}`;
   } finally {
     setBusy(sendVisionEl, false);
   }
 });
 
 sendImageEl.addEventListener("click", async () => {
-  const prompt = imagePromptEl.value.trim();
+  const prompt = promptEl.value.trim();
   if (!prompt) {
-    imageOutputEl.textContent = "請先輸入圖片描述";
+    outputEl.textContent = "請先輸入圖片描述";
     return;
   }
 
   setBusy(sendImageEl, true);
-  imageOutputEl.textContent = "generating...";
-  imagePreviewEl.classList.add("hidden");
-  imagePreviewEl.removeAttribute("src");
+  outputEl.textContent = "generating...";
+  generatedPreviewEl.classList.add("hidden");
 
   try {
     const data = await postJson("/api/generate-image", {
@@ -135,14 +138,14 @@ sendImageEl.addEventListener("click", async () => {
       size: imageSizeEl.value.trim()
     });
     if (data.imageUrl) {
-      imagePreviewEl.src = data.imageUrl;
-      imagePreviewEl.classList.remove("hidden");
-      imageOutputEl.textContent = "Done";
+      generatedPreviewEl.src = data.imageUrl;
+      generatedPreviewEl.classList.remove("hidden");
+      outputEl.textContent = "Done";
     } else {
-      imageOutputEl.textContent = data.text || "(empty response)";
+      outputEl.textContent = data.text || "(empty response)";
     }
   } catch (err) {
-    imageOutputEl.textContent = `Error: ${err.message}`;
+    outputEl.textContent = `Error: ${err.message}`;
   } finally {
     setBusy(sendImageEl, false);
   }

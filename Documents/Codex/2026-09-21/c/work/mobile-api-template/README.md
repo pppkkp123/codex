@@ -1,6 +1,6 @@
 # CGU AI Gateway Template
 
-最小可用的手機網頁版範本。前端是靜態頁，後端會用學校提供的 `CGU_API_KEY` 呼叫 `https://air.cgu.edu.tw/cgullmapi/v1`，支援文字、圖片問答、圖片生成。
+最小可用的手機網頁版範本。前端是一個單一輸入區，後端會用學校提供的 `CGU_API_KEY` 呼叫 `https://air.cgu.edu.tw/cgullmapi/v1`，支援文字、圖片問答、圖片生成。
 
 ## Deploy to Vercel
 
